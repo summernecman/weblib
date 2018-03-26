@@ -1,6 +1,6 @@
 package com.summer.base;
 
-public interface OnFinishListener{
+public interface OnFinishI {
 
     void onFinish(Object o);
 }
