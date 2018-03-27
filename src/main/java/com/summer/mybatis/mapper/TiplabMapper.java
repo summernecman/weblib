@@ -1,6 +1,6 @@
 package com.summer.mybatis.mapper;
 
-import com.summer.mybatis.entity.Tip;
+import com.summer.mybatis.entity.Tiplab;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -11,55 +11,55 @@ import org.apache.ibatis.annotations.SelectKey;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.type.JdbcType;
 
-public interface TipMapper {
+public interface TiplabMapper {
     @Delete({
-        "delete from tip",
+        "delete from tiplab",
         "where id = #{id,jdbcType=INTEGER}"
     })
     int deleteByPrimaryKey(Integer id);
 
     @Insert({
-        "insert into tip (recordid, tipid, ",
+        "insert into tiplab (content, enable, ",
         "ctime)",
-        "values (#{recordid,jdbcType=INTEGER}, #{tipid,jdbcType=INTEGER}, ",
+        "values (#{content,jdbcType=VARCHAR}, #{enable,jdbcType=INTEGER}, ",
         "#{ctime,jdbcType=TIMESTAMP})"
     })
     @SelectKey(statement="SELECT LAST_INSERT_ID()", keyProperty="id", before=false, resultType=Integer.class)
-    int insert(Tip record);
+    int insert(Tiplab record);
 
     @Select({
         "select",
-        "id, recordid, tipid, ctime",
-        "from tip",
+        "id, content, enable, ctime",
+        "from tiplab",
         "where id = #{id,jdbcType=INTEGER}"
     })
     @Results({
         @Result(column="id", property="id", jdbcType=JdbcType.INTEGER, id=true),
-        @Result(column="recordid", property="recordid", jdbcType=JdbcType.INTEGER),
-        @Result(column="tipid", property="tipid", jdbcType=JdbcType.INTEGER),
+        @Result(column="content", property="content", jdbcType=JdbcType.VARCHAR),
+        @Result(column="enable", property="enable", jdbcType=JdbcType.INTEGER),
         @Result(column="ctime", property="ctime", jdbcType=JdbcType.TIMESTAMP)
     })
-    Tip selectByPrimaryKey(Integer id);
+    Tiplab selectByPrimaryKey(Integer id);
 
     @Select({
         "select",
-        "id, recordid, tipid, ctime",
-        "from tip"
+        "id, content, enable, ctime",
+        "from tiplab"
     })
     @Results({
         @Result(column="id", property="id", jdbcType=JdbcType.INTEGER, id=true),
-        @Result(column="recordid", property="recordid", jdbcType=JdbcType.INTEGER),
-        @Result(column="tipid", property="tipid", jdbcType=JdbcType.INTEGER),
+        @Result(column="content", property="content", jdbcType=JdbcType.VARCHAR),
+        @Result(column="enable", property="enable", jdbcType=JdbcType.INTEGER),
         @Result(column="ctime", property="ctime", jdbcType=JdbcType.TIMESTAMP)
     })
-    List<Tip> selectAll();
+    List<Tiplab> selectAll();
 
     @Update({
-        "update tip",
-        "set recordid = #{recordid,jdbcType=INTEGER},",
-          "tipid = #{tipid,jdbcType=INTEGER},",
+        "update tiplab",
+        "set content = #{content,jdbcType=VARCHAR},",
+          "enable = #{enable,jdbcType=INTEGER},",
           "ctime = #{ctime,jdbcType=TIMESTAMP}",
         "where id = #{id,jdbcType=INTEGER}"
     })
-    int updateByPrimaryKey(Tip record);
+    int updateByPrimaryKey(Tiplab record);
 }

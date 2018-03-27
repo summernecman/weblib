@@ -2,12 +2,12 @@ package com.summer.mybatis.entity;
 
 import java.util.Date;
 
-public class Tip {
+public class Tiplab {
     private Integer id;
 
-    private Integer recordid;
+    private String content;
 
-    private Integer tipid;
+    private Integer enable;
 
     private Date ctime;
 
@@ -19,20 +19,20 @@ public class Tip {
         this.id = id;
     }
 
-    public Integer getRecordid() {
-        return recordid;
+    public String getContent() {
+        return content;
     }
 
-    public void setRecordid(Integer recordid) {
-        this.recordid = recordid;
+    public void setContent(String content) {
+        this.content = content == null ? null : content.trim();
     }
 
-    public Integer getTipid() {
-        return tipid;
+    public Integer getEnable() {
+        return enable;
     }
 
-    public void setTipid(Integer tipid) {
-        this.tipid = tipid;
+    public void setEnable(Integer enable) {
+        this.enable = enable;
     }
 
     public Date getCtime() {

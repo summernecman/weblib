@@ -2,9 +2,6 @@ package com.summer.control;
 
 import com.summer.base.bean.Tools;
 import com.summer.mybatis.DBTools;
-import com.summer.mybatis.entity.User;
-import com.summer.mybatis.entity.Video;
-import com.summer.mybatis.mapper.VideoMapper;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +22,5 @@ public class VideoControl {
     @RequestMapping(value = "/getAllVideos",method = RequestMethod.GET)
     public void aaa(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
-
-        SqlSession sqlSession = DBTools.getSession();
-        VideoMapper videoMapper = sqlSession.getMapper(VideoMapper.class);
-
-        List<User> users = videoMapper.selectAllUser();
-        sqlSession.commit();
-        Tools.printOut(res,users);
     }
 }
