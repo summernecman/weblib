@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="war" name="Gradle : com.summer : server-1.0-SNAPSHOT.war">
+  <artifact type="war" name="summer">
     <output-path>$PROJECT_DIR$/out/artifacts/server</output-path>
     <properties id="gradle-properties">
       <options external-project-path="$PROJECT_DIR$" />
@@ -30,6 +30,7 @@
           <element id="library" level="project" name="Gradle: org.springframework:spring-expression:4.2.4.RELEASE" />
           <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
           <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
+          <element id="library" level="project" name="server" />
         </element>
       </element>
       <element id="directory" name="META-INF">

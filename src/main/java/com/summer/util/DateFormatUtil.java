@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateFormatUtil {
 
@@ -46,6 +47,7 @@ public class DateFormatUtil {
 
     public static String getdDateStr(String dateFormat, Date date) {
         SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
         return format.format(date);
     }
 
