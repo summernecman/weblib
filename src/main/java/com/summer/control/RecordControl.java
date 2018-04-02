@@ -29,20 +29,24 @@ import java.util.List;
  */
 
 @Controller
-@RequestMapping("/video")
-public class VideoControl {
+@RequestMapping("/record")
+public class RecordControl {
 
-    @RequestMapping(value = "/getAllVideos",method = RequestMethod.GET)
-    public void aaa(HttpServletRequest req, HttpServletResponse res){
+    @RequestMapping(value = "/getAllRecords",method = RequestMethod.GET)
+    public void getAllRecords(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
+        String atype = req.getParameter("atype");
         SqlSession session  =  DBTools.getSession();
-        Tools.printOut(res,session.getMapper(RecordMapper.class).getRecordCount());
+        BaseResBean baseResBean = new BaseResBean();
+        RecordMapper recordMapper = session.getMapper(RecordMapper.class);
+        baseResBean.setData(recordMapper.selectAllByAtype(atype));
+        baseResBean.setOther(recordMapper.getUploadNum(atype)+"/"+recordMapper.getRecordCount(atype));
+        Tools.printOut(res,baseResBean);
         session.close();
     }
 
-
-    @RequestMapping(value = "/updatevideos",method = RequestMethod.POST)
-    public void updatevideos(HttpServletRequest req, HttpServletResponse res){
+    @RequestMapping(value = "/updateRecords",method = RequestMethod.POST)
+    public void updateRecords(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
         ArrayList<Record> records = GsonUtil.getInstance().fromJson(req.getParameter("data"), new TypeToken<ArrayList<Record>>(){}.getType());
 
@@ -52,22 +56,25 @@ public class VideoControl {
             if(recordMapper.selectRecordNumWhereLocalPath(records.get(i).getLocpath())!=0){
                 continue;
             }
-            records.get(i).setAtype(Record.ATYPE_VIDEO);
             recordMapper.insert(records.get(i));
         }
         session.commit();
         session.close();
     }
 
-    @RequestMapping(value = "/uploadvideos",method = RequestMethod.POST)
-    public void addFiles(HttpServletRequest req, HttpServletResponse rep){
+    @RequestMapping(value = "/uploadRecords",method = RequestMethod.POST)
+    public void uploadRecords(HttpServletRequest req, HttpServletResponse rep){
         Tools.init(req,rep);
         DiskFileItemFactory factory = new DiskFileItemFactory();
         File parent = new File("E://record");
         if(!parent.exists()){
             parent.mkdirs();
         }
-        factory.setRepository(new File("E://temp"));
+        File temp = new File("E://temp");
+        if(!temp.exists()){
+            temp.mkdirs();
+        }
+        factory.setRepository(temp);
         factory.setSizeThreshold(1024*1024);
         ServletFileUpload upload = new ServletFileUpload(factory);
         BaseResBean baseResBean = new BaseResBean();

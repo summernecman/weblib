@@ -67,6 +67,9 @@ public interface RecordMapper {
     })
     List<Record> selectAll();
 
+    @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR}"})
+    List<Record> selectAllByAtype(@Param("atype") String atype);
+
     @Update({
         "update record",
         "set locpath = #{locpath,jdbcType=VARCHAR},",
@@ -85,8 +88,11 @@ public interface RecordMapper {
 
     @Select({"select count(id) from record where locpath = #{locpath,jdbcType=VARCHAR}"})
     int  selectRecordNumWhereLocalPath(String locpath);
-    @Select({"select count(id) from record"})
-    int getRecordCount();
+    @Select({"select count(id) from record where atype = #{atype,jdbcType=VARCHAR}"})
+    int getRecordCount(@Param("atype") String atype);
+
+    @Select({"select count(id) from record where netpath!='' and atype = #{atype,jdbcType=VARCHAR}"})
+    int getUploadNum(@Param("atype") String atype);
 
 
     @Select({"select * from record where locpath = #{locpath,jdbcType=VARCHAR}"})
