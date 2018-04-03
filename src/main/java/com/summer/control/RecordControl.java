@@ -3,11 +3,14 @@ package com.summer.control;
 import com.google.gson.reflect.TypeToken;
 import com.summer.base.bean.BaseResBean;
 import com.summer.base.bean.Tools;
+import com.summer.bean.Records;
+import com.summer.global.Value;
 import com.summer.mybatis.DBTools;
 import com.summer.mybatis.entity.Record;
 import com.summer.mybatis.mapper.RecordMapper;
 import com.summer.util.DateFormatUtil;
 import com.summer.util.GsonUtil;
+import com.summer.util.NullUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -45,6 +48,21 @@ public class RecordControl {
         session.close();
     }
 
+    @RequestMapping(value = "/getRecordInfo",method = RequestMethod.GET)
+    public void getRecordInfo(HttpServletRequest req, HttpServletResponse res){
+        Tools.init(req,res);
+        String atype = req.getParameter("atype");
+        SqlSession session  =  DBTools.getSession();
+        BaseResBean baseResBean = new BaseResBean();
+        RecordMapper recordMapper = session.getMapper(RecordMapper.class);
+        Records records = new Records();
+        records.setAllNum(recordMapper.getRecordCount(atype));
+        records.setDoneNum(recordMapper.getUploadNum(atype));
+        baseResBean.setData(records);
+        Tools.printOut(res,baseResBean);
+        session.close();
+    }
+
     @RequestMapping(value = "/updateRecords",method = RequestMethod.POST)
     public void updateRecords(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
@@ -62,19 +80,44 @@ public class RecordControl {
         session.close();
     }
 
+
+    @RequestMapping(value = "/isRecordUploaded",method = RequestMethod.POST)
+    public void isRecordUploaded(HttpServletRequest req, HttpServletResponse res){
+        Tools.init(req,res);
+        Record record = GsonUtil.getInstance().fromJson(req.getParameter("data"),Record.class);
+        SqlSession session  =  DBTools.getSession();
+        RecordMapper recordMapper = session.getMapper(RecordMapper.class);
+        ArrayList<Record> records = (ArrayList<Record>) recordMapper.selectRecordWhereLocalPath(record.getLocpath());
+        BaseResBean baseResBean = new BaseResBean();
+        if(record==null||records.size()==0){
+            Record record1 = new Record();
+            record1.setUploaded(false);
+            baseResBean.setData(record1);
+        }else{
+            File typeFile = new File(Value.getRecordFile(), DateFormatUtil.getdDateStr(DateFormatUtil.YYYYMMDD,new Date(records.get(0).getCtime())));
+            String[] strs = record.getLocpath().split("/");
+            File file = new File(typeFile,strs[strs.length-1]);
+            if(NullUtil.isStrEmpty(records.get(0).getNetpath())||!file.exists()){
+                Record record1 = new Record();
+                record1.setUploaded(false);
+                baseResBean.setData(record1);
+            }else{
+                Record record1 = new Record();
+                record1.setUploaded(true);
+                baseResBean.setData(record1);
+            }
+        }
+        Tools.printOut(res,baseResBean);
+        session.commit();
+        session.close();
+    }
+
+
     @RequestMapping(value = "/uploadRecords",method = RequestMethod.POST)
     public void uploadRecords(HttpServletRequest req, HttpServletResponse rep){
         Tools.init(req,rep);
         DiskFileItemFactory factory = new DiskFileItemFactory();
-        File parent = new File("E://record");
-        if(!parent.exists()){
-            parent.mkdirs();
-        }
-        File temp = new File("E://temp");
-        if(!temp.exists()){
-            temp.mkdirs();
-        }
-        factory.setRepository(temp);
+        factory.setRepository(Value.getTempFile());
         factory.setSizeThreshold(1024*1024);
         ServletFileUpload upload = new ServletFileUpload(factory);
         BaseResBean baseResBean = new BaseResBean();
@@ -104,11 +147,13 @@ public class RecordControl {
                         RecordMapper recordMapper = session.getMapper(RecordMapper.class);
                         ArrayList<Record> records = (ArrayList<Record>) recordMapper.selectRecordWhereLocalPath(local);
                         if(records!=null&&records.size()==1){
-                            File typeFile = new File(parent, DateFormatUtil.getdDateStr(DateFormatUtil.YYYYMMDD,new Date(records.get(0).getCtime())));
+                            File typeFile = new File(Value.getRecordFile(), DateFormatUtil.getdDateStr(DateFormatUtil.YYYYMMDD,new Date(records.get(0).getCtime())));
                             if(!typeFile.exists()){
                                 typeFile.mkdirs();
                             }
-                            File file = new File(typeFile,list.get(i).getName());
+                            String[] strs = local.split("/");
+
+                            File file = new File(typeFile,strs[strs.length-1]);
                             System.out.println(file.getPath());
                             files.add(file.getPath());
                             if(!file.exists()){

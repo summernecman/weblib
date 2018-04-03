@@ -35,4 +35,6 @@ public class Record {
 
     private String content;
 
+    public boolean isUploaded = false;
+
 }
