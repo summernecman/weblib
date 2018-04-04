@@ -67,17 +67,30 @@ public class RecordControl {
     public void updateRecords(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
         ArrayList<Record> records = GsonUtil.getInstance().fromJson(req.getParameter("data"), new TypeToken<ArrayList<Record>>(){}.getType());
-
+        ArrayList<Record> list = new ArrayList<>();
         SqlSession session  =  DBTools.getSession();
         for(int i=0;records!=null && i<records.size();i++){
             RecordMapper recordMapper = session.getMapper(RecordMapper.class);
-            if(recordMapper.selectRecordNumWhereLocalPath(records.get(i).getLocpath())!=0){
+            ArrayList<Record> selects = (ArrayList<Record>) recordMapper.selectRecordWhereLocalPath(records.get(i).getLocpath());
+            if(selects!=null&&selects.size()>0){
+               if(NullUtil.isStrEmpty(selects.get(0).getNetpath())){
+                   list.add(records.get(i));
+               }else{
+                   File file = new File(selects.get(0).getNetpath());
+                   if(!file.exists()){
+                       list.add(records.get(i));
+                   }
+               }
                 continue;
             }
             recordMapper.insert(records.get(i));
+            list.add(records.get(i));
         }
         session.commit();
         session.close();
+        BaseResBean baseResBean = new BaseResBean();
+        baseResBean.setData(list);
+        Tools.printOut(res,baseResBean);
     }
 
 
