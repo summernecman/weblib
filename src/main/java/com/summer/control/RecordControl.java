@@ -104,7 +104,7 @@ public class RecordControl {
         BaseResBean baseResBean = new BaseResBean();
         if(record==null||records.size()==0){
             Record record1 = new Record();
-            record1.setUploaded(false);
+            record1.setIsUploaded(0);
             baseResBean.setData(record1);
         }else{
             File typeFile = new File(Value.getRecordFile(), DateFormatUtil.getdDateStr(DateFormatUtil.YYYYMMDD,new Date(records.get(0).getCtime())));
@@ -112,11 +112,11 @@ public class RecordControl {
             File file = new File(typeFile,strs[strs.length-1]);
             if(NullUtil.isStrEmpty(records.get(0).getNetpath())||!file.exists()){
                 Record record1 = new Record();
-                record1.setUploaded(false);
+                record1.setIsUploaded(0);
                 baseResBean.setData(record1);
             }else{
                 Record record1 = new Record();
-                record1.setUploaded(true);
+                record1.setIsUploaded(1);
                 baseResBean.setData(record1);
             }
         }
